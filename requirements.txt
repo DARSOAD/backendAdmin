@@ -6,3 +6,5 @@ mangum
 bcrypt
 python-jose         #para autenticación
 passlib             # 
+pydantic
+pydantic[email]
