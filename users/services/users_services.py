@@ -6,7 +6,7 @@ from fastapi import HTTPException
 from users.db.schemas.client import dynamodb
 
 
-users_table = dynamodb.Table("Users")
+users_table = dynamodb.Table("cleaning_users_users")
 
 def create_user(user: UserCreate) -> UserOut:
     # 1️⃣ Validación de datos obligatorios
