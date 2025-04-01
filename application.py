@@ -26,6 +26,10 @@ app.include_router(users.router, prefix="/users")  # Agrega las rutas bajo el pr
 # from catalog.routers import catalog  # Importa directamente el router de orders
 # app.include_router(catalog.router, prefix="/catalog")  # Agrega las rutas bajo el prefijo "/orders"
 
+
+import os
+
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8080)
+    port = int(os.getenv("PORT", 8080))
+    uvicorn.run(app, host="0.0.0.0", port=port)
