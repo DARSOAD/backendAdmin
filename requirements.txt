@@ -4,7 +4,6 @@ boto3
 python-dotenv
 mangum
 bcrypt
-python-jose         #para autenticación
-passlib             # 
-pydantic
+python-jose
+passlib
 pydantic[email]
