@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Request
 from dotenv import load_dotenv
+
 load_dotenv()
 
 app = FastAPI()
@@ -27,4 +28,4 @@ app.include_router(users.router, prefix="/users")  # Agrega las rutas bajo el pr
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=9000)
+    uvicorn.run(app, host="0.0.0.0", port=8080)
