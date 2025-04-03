@@ -10,7 +10,7 @@ load_dotenv()
 def get_secret_key() -> str:
     # Primero intenta cargar desde AWS Secrets Manager (producción)
     try:
-        secret_name = os.getenv("SECRET_NAME", "fastapi-secret-key")  # Nombre del secreto en AWS Secrets Manager
+        secret_name = os.getenv("SECRET_NAME", "CleaningApp")  # Nombre del secreto en AWS Secrets Manager
         region_name = os.getenv("AWS_REGION", "ap-southeast-2")  # Región de AWS (ajustar según corresponda)
 
         # Crear el cliente de boto3 para acceder a Secrets Manager
