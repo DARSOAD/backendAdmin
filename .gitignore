@@ -9,3 +9,7 @@ __pycache__/
 # Archivos sensibles
 .env
 .env.*
+
+# Secret files
+*.env
+!.env.example
