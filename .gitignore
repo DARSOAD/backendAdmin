@@ -1,0 +1,11 @@
+# .gitignore
+
+# Entornos
+.venv/
+env/
+__pycache__/
+*.pyc
+
+# Archivos sensibles
+.env
+.env.*
