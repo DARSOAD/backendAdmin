@@ -7,6 +7,7 @@ class UserCreate(BaseModel):
     name: str = Field(..., min_length=2, max_length=50)  # Define restricciones de longitud
     role: str = Field(..., pattern=r'^(user|moderator|editor|manager|admin)$')  # Verifica si es user, moderator o admin
     password: str = Field(..., min_length=8)  # Longitud mínima de la contraseña
+    image: Optional[str] = "/images/default-avatar.png"  # Campo opcional para la imagen
 
     @model_validator(mode="after")  # Reemplaza root_validator con 
     def validate_password(cls, values):
@@ -23,9 +24,11 @@ class UserCreate(BaseModel):
         from_attributes = True  # Actualiza 'orm_mode' a 'from_attributes'
 
 class UserOut(BaseModel):
+    id: str
     email: EmailStr
     name: str
     role: str
+    picture: str
     created_at: Optional[str]  # Opcional si decides incluir la fecha de creación del usuario
 
     class Config:

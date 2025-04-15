@@ -1,3 +1,5 @@
+# core/config.py
+
 import os
 import json
 import boto3
@@ -7,37 +9,51 @@ from botocore.exceptions import ClientError
 # Cargar variables de entorno desde .env (para desarrollo local)
 load_dotenv()
 
+# ================================
+# 🔐 SECRET KEY
+# ================================
 def get_secret_key() -> str:
-    # Primero intenta cargar desde AWS Secrets Manager (producción)
     try:
-        secret_name = os.getenv("SECRET_NAME", "CleaningApp")  # Nombre del secreto en AWS Secrets Manager
-        region_name = os.getenv("AWS_REGION", "ap-southeast-2")  # Región de AWS (ajustar según corresponda)
+        secret_name = os.getenv("SECRET_NAME", "CleaningApp")
+        region_name = os.getenv("AWS_REGION", "ap-southeast-2")
 
-        # Crear el cliente de boto3 para acceder a Secrets Manager
         client = boto3.client("secretsmanager", region_name=region_name)
-        
-        # Recuperar el secreto
         response = client.get_secret_value(SecretId=secret_name)
-        secret = json.loads(response["SecretString"])  # Decodificar el secreto en JSON
-
-        return secret["SECRET_KEY"]  # Devolver la clave secreta
+        secret = json.loads(response["SecretString"])
+        return secret["SECRET_KEY"]
     except ClientError as e:
         print(f"[INFO] No se pudo obtener el secreto desde Secrets Manager. Usando .env. ({e})")
     except Exception as e:
         print(f"[ERROR] Falla inesperada con Secrets Manager: {e}")
 
-    # Si no está en Secrets Manager, buscar en .env (desarrollo local)
     secret_key = os.getenv("SECRET_KEY")
     if not secret_key:
-        raise RuntimeError("SECRET_KEY no está definido ni en Secrets Manager ni en .env")
-    
+        raise RuntimeError("SECRET_KEY no está definida ni en Secrets Manager ni en .env")
     return secret_key
 
-# Usado en el resto de la aplicación
+# ================================
+# 🔐 JWT Config
+# ================================
 SECRET_KEY = get_secret_key()
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 REFRESH_TOKEN_EXPIRE_DAYS = 7
 
-# Configuración de la base de datos (si la usas en tu proyecto)
+# ================================
+# 🗄️ DynamoDB Config (Local o AWS)
+# ================================
+AWS_REGION = os.getenv("AWS_REGION", "ap-southeast-2")
+DYNAMODB_ENDPOINT = os.getenv("DYNAMODB_ENDPOINT")  # Ej: http://localhost:9000
+
+# ================================
+# ☁️ S3 Config
+# ================================
+AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
+AWS_S3_BUCKET_NAME = os.getenv("AWS_S3_BUCKET_NAME")
+AWS_S3_PUBLIC = os.getenv("AWS_S3_PUBLIC", "True").lower() in ("true", "1", "yes")
+
+# ================================
+# 🛢️ PostgreSQL o RDS (opcional)
+# ================================
 DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://cleaning:admin@localhost/cleaning")

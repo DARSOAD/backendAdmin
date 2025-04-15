@@ -15,11 +15,12 @@ def register(user: UserCreate):
     except Exception:
         raise HTTPException(status_code=500, detail="Internal server error")
     
-@router.post("/login", response_model=UserLoginOut, tags=["users"])
+@router.post("/login", response_model=AuthResponse, tags=["users"])
 async def login(user: UserLogin):
     try:
         return login_user(user)  
     except HTTPException as e:
         raise e
     except Exception:
+        print(f"Unexpected error: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")

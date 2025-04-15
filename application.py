@@ -17,6 +17,9 @@ async def inicio(request: Request):
 from users.routers import users  # Importa directamente el router de usuarios
 app.include_router(users.router, prefix="/users")  # Agrega las rutas bajo el prefijo "/users"
 
+from blog.routers import blog_routers # Importa directamente el router de usuarios
+app.include_router(blog_routers.router, prefix="/blog")  # Agrega las rutas bajo el prefijo "/users"
+
 # from orders.routers import orders  # Importa directamente el router de orders
 # app.include_router(orders.router, prefix="/orders")  # Agrega las rutas bajo el prefijo "/orders"
 
