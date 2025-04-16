@@ -25,4 +25,4 @@ def create_blog_post(
     except HTTPException as e:
         raise e
     except Exception:
-        raise HTTPException(status_code=500, detail="Internal server error")
+        raise HTTPException(status_code=500, detail="Internal server error (routers/blog_routes.py /create)")

@@ -77,7 +77,7 @@ def create_user(user: UserCreate) -> AuthResponse:
     except Exception as e:
         print(f"Unexpected error: {e}")
         logger.error(f"Unexpected error: {e}")
-        raise HTTPException(status_code=500, detail="Internal server error")
+        raise HTTPException(status_code=500, detail="Internal server error (users_services.py /create_user)")
 
 def login_user(user: UserLogin) -> AuthResponse:
     if not user.email or not user.password:
