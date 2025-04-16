@@ -24,21 +24,14 @@ def decode_base64_image(data_url: str) -> Tuple[bytes, str]:
     image_data = base64.b64decode(image_base64)
     return image_data, mime_type
 
+
 def upload_base64_image(image_base64: str, author_id: str, folder: str = "posts") -> str:
     try:
         image_data, mime_type = decode_base64_image(image_base64)
-
-        extension = mime_type.split("/")[-1]  # jpg, png, webp
+        extension = mime_type.split("/")[-1]
         key = f"{folder}/{author_id}/{uuid.uuid4().hex}.{extension}"
 
-        s3 = boto3.client(
-            "s3",
-            aws_access_key_id=config.AWS_ACCESS_KEY_ID,
-            aws_secret_access_key=config.AWS_SECRET_ACCESS_KEY,
-            region_name=config.AWS_REGION
-        )
-
-        s3.upload_fileobj(
+        config.s3_client.upload_fileobj(
             Fileobj=BytesIO(image_data),
             Bucket=config.AWS_S3_BUCKET_NAME,
             Key=key,
@@ -48,7 +41,7 @@ def upload_base64_image(image_base64: str, author_id: str, folder: str = "posts"
         if config.AWS_S3_PUBLIC:
             return f"https://{config.AWS_S3_BUCKET_NAME}.s3.{config.AWS_REGION}.amazonaws.com/{key}"
         else:
-            return s3.generate_presigned_url(
+            return config.s3_client.generate_presigned_url(
                 "get_object",
                 Params={"Bucket": config.AWS_S3_BUCKET_NAME, "Key": key},
                 ExpiresIn=3600
@@ -56,4 +49,3 @@ def upload_base64_image(image_base64: str, author_id: str, folder: str = "posts"
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al subir la imagen a S3: {e}")
-

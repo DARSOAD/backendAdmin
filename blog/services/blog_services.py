@@ -45,7 +45,6 @@ def create_post(data: BlogPostCreate, author_id: str, author_name: str) -> BlogP
         author_name=author_name,
         created_at=created_at,
     )
-    print(f"Creando post: {post}")
     try:
         blogposts_table.put_item(Item=jsonable_encoder(post))
         logger.info(f"Nuevo post creado por {author_name} (ID: {author_id}) con ID {post_id}")

@@ -6,11 +6,13 @@ import boto3
 from dotenv import load_dotenv
 from botocore.exceptions import ClientError
 
-# Cargar variables de entorno desde .env (para desarrollo local)
+# ================================
+# 🌍 Cargar variables desde .env (solo en desarrollo)
+# ================================
 load_dotenv()
 
 # ================================
-# 🔐 SECRET KEY
+# 🔐 SECRET KEY desde Secrets Manager o .env
 # ================================
 def get_secret_key() -> str:
     try:
@@ -26,6 +28,7 @@ def get_secret_key() -> str:
     except Exception as e:
         print(f"[ERROR] Falla inesperada con Secrets Manager: {e}")
 
+    # Modo local o fallback
     secret_key = os.getenv("SECRET_KEY")
     if not secret_key:
         raise RuntimeError("SECRET_KEY no está definida ni en Secrets Manager ni en .env")
@@ -40,18 +43,29 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 REFRESH_TOKEN_EXPIRE_DAYS = 7
 
 # ================================
-# 🗄️ DynamoDB Config (Local o AWS)
+# 🗄️ DynamoDB Config
 # ================================
 AWS_REGION = os.getenv("AWS_REGION", "ap-southeast-2")
-DYNAMODB_ENDPOINT = os.getenv("DYNAMODB_ENDPOINT")  # Ej: http://localhost:9000
+DYNAMODB_ENDPOINT = os.getenv("DYNAMODB_ENDPOINT")  # Solo se usa en local
 
 # ================================
-# ☁️ S3 Config
+# ☁️ S3 Config (bucket y cliente)
 # ================================
-AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
-AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
 AWS_S3_BUCKET_NAME = os.getenv("AWS_S3_BUCKET_NAME")
 AWS_S3_PUBLIC = os.getenv("AWS_S3_PUBLIC", "True").lower() in ("true", "1", "yes")
+
+# Crear cliente S3
+if os.getenv("AWS_ACCESS_KEY_ID") and os.getenv("AWS_SECRET_ACCESS_KEY"):
+    # 🧪 Modo local con .env
+    s3_client = boto3.client(
+        "s3",
+        region_name=AWS_REGION,
+        aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
+        aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY")
+    )
+else:
+    # ☁️ Modo producción: usa IAM Role del contenedor (App Runner)
+    s3_client = boto3.client("s3", region_name=AWS_REGION)
 
 # ================================
 # 🛢️ PostgreSQL o RDS (opcional)
