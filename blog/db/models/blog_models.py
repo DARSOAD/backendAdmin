@@ -5,6 +5,7 @@ from datetime import datetime
 
 class BlogPost(BaseModel):
     post_id: str
+    slug: Optional[str]
     title: str
     content: str
     cover_url: Optional[str]

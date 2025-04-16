@@ -1,5 +1,6 @@
 # core/config.py
 
+import logging
 import os
 import json
 import boto3
@@ -64,8 +65,13 @@ if os.getenv("AWS_ACCESS_KEY_ID") and os.getenv("AWS_SECRET_ACCESS_KEY"):
         aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY")
     )
 else:
-    # ☁️ Modo producción: usa IAM Role del contenedor (App Runner)
-    s3_client = boto3.client("s3", region_name=AWS_REGION)
+    try:
+        # ☁️ Modo producción: usa IAM Role del contenedor (App Runner)
+        s3_client = boto3.client("s3", region_name=AWS_REGION)
+        print("[INFO] Cliente S3 configurado en modo PRODUCCIÓN con IAM Role. {s3_client}")
+    except Exception as e:
+        logging.error(f"[ERROR] Fallo al configurar cliente S3 en App Runner: {e} ")
+        raise RuntimeError("No se pudo configurar el cliente S3 en producción")
 
 # ================================
 # 🛢️ PostgreSQL o RDS (opcional)
